@@ -1,4 +1,4 @@
-- hosts: orderer
+- hosts: peer0.member1.example.com 
   vars:
      orderer_org: member1.example.com
      orderer: orderer0.member1.example.com
@@ -10,7 +10,7 @@
   roles:
     - cli
 
-- hosts: orderer
+- hosts: peer1.member1.example.com 
   vars:
      orderer_org: member1.example.com
      orderer: orderer0.member1.example.com
@@ -22,7 +22,7 @@
   roles:
     - cli
 
-- hosts: orderer
+- hosts: peer0.member2.example.com 
   vars:
      orderer_org: member1.example.com
      orderer: orderer0.member1.example.com
