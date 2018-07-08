@@ -201,7 +201,9 @@
 1. [网易云课堂，IT技术快速入门学院][1]
 2. [HyperLedger Fabric进阶实战课][2]
 3. [超级账本&区块链实战文档][3]
+4. [HyperLedger Fabric原版文档中文批注][4]
 
 [1]: https://study.163.com/provider/400000000376006/course.htm?share=2&shareId=400000000376006 "IT技术快速入门学院" 
 [2]: https://study.163.com/course/courseMain.htm?courseId=1005359012&share=2&shareId=400000000376006 "HyperLedger Fabric进阶实战课"
 [3]: http://www.lijiaocn.com/tags/blockchain.html "超级账本&区块链实战文档"
+[4]: http://fabric.lijiaocn.com "HyperLedger Fabric原版文档中文批注"
