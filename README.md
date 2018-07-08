@@ -187,5 +187,16 @@
 
 	ansible-playbook -i inventories/example.com/hosts -u root playbooks/manage_destroy.yml
 
+## 联系
+
+要获得更多的内容，可以关注：
+
+        微信公众号： “我的网课”
+        QQ交流群： 576555864
+
+如果视频中有讲解不到位或需要订正的地方，可以加入：
+
+![知识星球区块链实践分享](http://www.lijiaocn.com/img/xiaomiquan-blockchain.jpg)
+
 [1]: https://study.163.com/provider/400000000376006/course.htm?share=2&shareId=400000000376006 "IT技术快速入门学院" 
 [2]: https://study.163.com/course/courseMain.htm?courseId=1005359012&share=2&shareId=400000000376006 "HyperLedger Fabric进阶实战课"
