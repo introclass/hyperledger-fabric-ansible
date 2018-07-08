@@ -50,21 +50,23 @@
 	crypto-config.yaml
 	hosts
 
-2 运行perpare.sh生成证书，以及创世块(可以根据需要修改脚本)：
-
-	./prepare.sh example
+2 准备在运行ansible的机器使用fabric命令：
 
 注意事项1：
 
 >`prepare.sh`会使用hyperledger fabric的命令，需要把在本地运行的fabric命令放到`output/bin`目录中。
 
-例如，我是在mac上执行ansible的，下载的是darwin版本的：
+例如，我是在mac上执行ansible的，下载的是darwin版本的fabric：
 
 	mkdir -p output/bin
 	cd output/bin
 	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/darwin-amd64-1.1.0/hyperledger-fabric-darwin-amd64-1.1.0.tar.gz
 	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/darwin-amd64-1.1.0/hyperledger-fabric-darwin-amd64-1.1.0.tar.gz.md5
 	tar -xvf hyperledger-fabric-darwin-amd64-1.1.0.tar.gz
+
+3 运行perpare.sh生成证书，以及创世块(可以根据需要修改脚本)：
+
+	./prepare.sh example
 
 注意事项2：
 
