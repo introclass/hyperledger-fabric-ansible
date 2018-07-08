@@ -1,0 +1,63 @@
+General:
+    LedgerType: file
+    ListenAddress: 0.0.0.0
+    ListenPort: 7050
+    TLS:
+        Enabled: true
+        PrivateKey: ./tls/server.key
+        Certificate: ./tls/server.crt
+        RootCAs:
+          - ./tls/ca.crt
+#        ClientAuthEnabled: false
+#        ClientRootCAs:
+    LogLevel: info
+    LogFormat: '%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}'
+#    GenesisMethod: provisional
+    GenesisMethod: file
+    GenesisProfile: SampleInsecureSolo
+    GenesisFile: ./genesisblock
+    LocalMSPDir: ./msp
+    LocalMSPID: {{ MSPID }}
+    Profile:
+        Enabled: false
+        Address: 0.0.0.0:6060
+    BCCSP:
+        Default: SW
+        SW:
+            Hash: SHA2
+            Security: 256
+            FileKeyStore:
+                KeyStore:
+FileLedger:
+    Location:  ./data
+    Prefix: hyperledger-fabric-ordererledger
+RAMLedger:
+    HistorySize: 1000
+Kafka:
+    Retry:
+        ShortInterval: 5s
+        ShortTotal: 10m
+        LongInterval: 5m
+        LongTotal: 12h
+        NetworkTimeouts:
+            DialTimeout: 10s
+            ReadTimeout: 10s
+            WriteTimeout: 10s
+        Metadata:
+            RetryBackoff: 250ms
+            RetryMax: 3
+        Producer:
+            RetryBackoff: 100ms
+            RetryMax: 3
+        Consumer:
+            RetryBackoff: 2s
+    Verbose: false
+    TLS:
+      Enabled: false
+      PrivateKey:
+        #File: path/to/PrivateKey
+      Certificate:
+        #File: path/to/Certificate
+      RootCAs:
+        #File: path/to/RootCAs
+    Version:

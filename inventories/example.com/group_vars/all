@@ -1,0 +1,11 @@
+topdir: "{{ playbook_dir }}/output/example.com"
+
+crypto_path: "{{ topdir }}/crypto-config"
+channel_path: "{{ topdir }}/channel-artifacts"
+bin_path: "{{ topdir }}/bin"
+orderer_crypto_path: "{{ crypto_path }}/ordererOrganizations"
+peer_crypto_path: "{{ crypto_path }}/peerOrganizations"
+
+orderer_install_path: "/opt/app/fabric/orderer"
+peer_install_path: "/opt/app/fabric/peer"
+cli_install_path: "/opt/app/fabric/cli"

@@ -1,0 +1,52 @@
+Profiles:
+    OrdererGenesis:
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *Orderer-Member1
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+                    - *Peer-Member1
+                    - *Peer-Member2
+    Channel:
+        Consortium: SampleConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                 - *Peer-Member1
+                 - *Peer-Member2
+Organizations:
+    - &Orderer-Member1
+        Name: orderers.member1.example.com 
+        ID: orderers.member1.example.com
+        MSPDir: ../../output/example.com/crypto-config/ordererOrganizations/member1.example.com/msp
+    - &Peer-Member1
+        Name: peers.member1.example.com
+        ID: peers.member1.example.com
+        MSPDir: ../../output/example.com/crypto-config/peerOrganizations/member1.example.com/msp
+        AnchorPeers:
+            - Host: peer0.member1.example.com
+              Port: 7051
+    - &Peer-Member2
+        Name: peers.member2.example.com
+        ID: peers.member2.example.com
+        MSPDir: ../../output/example.com/crypto-config/peerOrganizations/member2.example.com/msp
+        AnchorPeers:
+            - Host: peer0.member2.example.com
+              Port: 7051
+Orderer: &OrdererDefaults
+    OrdererType: solo
+    Addresses:
+        - orderer0.member1.example.com:7050
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Kafka:
+        Brokers:
+            - 127.0.0.1:9092
+    Organizations:
+Application: &ApplicationDefaults
+    Organizations:

@@ -1,0 +1,28 @@
+#! /bin/sh
+#
+# 0_create_channel.sh
+# Copyright (C) 2018 lijiaocn <lijiaocn@foxmail.com>
+#
+# Distributed under terms of the GPL license.
+#
+
+PATH=`pwd`/../../../bin:$PATH
+
+CHANNEL_NAME="mychannel"
+NAME="mycc"
+VERSION="1.1"
+
+export FABRIC_CFG_PATH=`pwd`
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_TLS_CERT_FILE=./tls/server.crt
+export CORE_PEER_TLS_KEY_FILE=./tls/server.key
+export CORE_PEER_MSPCONFIGPATH=./msp
+export CORE_PEER_TLS_ROOTCERT_FILE=./tls/ca.crt
+
+export CORE_PEER_ID=cli
+export CORE_LOGGING_LEVEL=DEBUG
+
+export CORE_PEER_LOCALMSPID={{ mspid }}
+export CORE_PEER_ADDRESS={{ peer }}:7051
+
+peer chaincode upgrade -o {{ orderer }}:7050 --tls true --cafile {{ orderer_ca }} -C $CHANNEL_NAME -n $NAME -v $VERSION -c '{"Args":["init"]}' -P  "OR ('peers.member1.example.com.member','peers.member2.example.com.member')"

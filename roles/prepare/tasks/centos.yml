@@ -1,0 +1,22 @@
+- name: epel-release
+  yum: 
+    name: epel-release
+    state: present
+- name: supervisor
+  yum: 
+    name: supervisor
+    state: present
+- name: docker
+  yum: 
+    name: docker
+    state: present
+
+- name: libtool-ltdl
+  yum: 
+    name: libtool-ltdl
+    state: present
+
+- name: start docker
+  systemd:
+      state: started
+      name: docker

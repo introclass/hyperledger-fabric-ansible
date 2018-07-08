@@ -1,0 +1,12 @@
+- hosts: peer
+  tasks:
+    - name: stop
+      shell: "./stop.sh"
+      args:
+        chdir: "{{ peer_install_path }}"
+- hosts: orderer
+  tasks:
+    - name: stop
+      shell: "./stop.sh"
+      args:
+        chdir: "{{ orderer_install_path }}"

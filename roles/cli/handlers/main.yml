@@ -1,0 +1,4 @@
+- name: restart
+  shell: "./stop.sh && sleep 1 && ./start.sh"
+  args:
+    chdir: "{{ peer_install_path }}"

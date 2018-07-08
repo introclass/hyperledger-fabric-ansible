@@ -1,0 +1,54 @@
+- name: create directory
+  file:
+    path: "{{ peer_install_path }}/{{ item }}"
+    state: directory
+  with_items:
+    - 'bin'
+    - 'tls'
+    - 'msp'
+    - 'log'
+    - 'data'
+
+- name: upload binary
+  notify: restart
+  copy:
+    src: "{{ item }}"
+    dest: "{{ peer_install_path }}/bin"
+    mode: u=rwx
+  with_items:
+    - "{{ bin_path }}/peer"
+
+- name: upload files 
+  notify: restart
+  copy:
+    src: "{{ item }}"
+    dest: "{{ peer_install_path }}"
+  with_items:
+    - "{{ peer_crypto_path }}/{{ ORG_DOMAIN }}/peers/{{ inventory_hostname }}/msp"
+    - "{{ peer_crypto_path }}/{{ ORG_DOMAIN }}/peers/{{ inventory_hostname }}/tls"
+
+- name: upload script 
+  notify: restart
+  copy:
+    src: "{{ item }}"
+    dest: "{{ peer_install_path }}"
+    mode: u=rwx
+  with_items:
+    - start.sh
+    - stop.sh
+
+- name: upload template config
+  notify: restart
+  template:
+    src: "{{ item }}.yaml.j2"
+    dest: "{{ peer_install_path }}/{{ item }}.yaml"
+  with_items:
+    - core
+
+- name: upload template config
+  notify: restart
+  template:
+    src: "{{ item }}.conf.j2"
+    dest: "{{ peer_install_path }}/{{ item }}.conf"
+  with_items:
+    - supervisord

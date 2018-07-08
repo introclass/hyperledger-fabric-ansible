@@ -1,0 +1,11 @@
+- hosts: orderer
+  become: true
+  become_user: root
+  roles:
+    - orderer
+
+- hosts: peer
+  become: true
+  become_user: root
+  roles:
+    - peer

@@ -1,0 +1,41 @@
+[inet_http_server]
+port=127.0.0.1:9001
+username=supervisorctl
+password=supervisorctl
+environment=PATH="%(here)s:$PATH"
+
+[supervisorctl]
+serverurl=http://127.0.0.1:9001
+username=supervisorctl
+password=supervisorctl
+prompt={{ inventory_hostname }}
+
+[supervisord]
+logfile=%(here)s/log/supervisord.log
+logfile_maxbytes=50MB
+logfile_backups=10
+pidfile=/var/run/supervisor/{{ inventory_hostname }}.pid
+loglevel=info
+nodaemon=false
+nocleanup=true
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+[program: peer]
+command=./bin/peer node start
+environment=FABRIC_CFG_PATH={{ peer_install_path }}
+
+numprocs=1
+autostart=true
+startretries=3
+autorestart=unexpected
+exitcodes=0,2
+
+stdout_logfile=./log/{{ inventory_hostname }}.stdout
+stdout_logfile_maxbytes=50MB
+stdout_logfile_backups=10
+
+stderr_logfile=./log/{{ inventory_hostname }}.stderr
+stderr_logfile_maxbytes=50MB
+stderr_logfile_backups=10

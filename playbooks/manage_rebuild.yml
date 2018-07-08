@@ -1,0 +1,35 @@
+- hosts: peer
+  tasks:
+    - name: stop 
+      shell: "./stop.sh"
+      args:
+        chdir: "{{ peer_install_path }}"
+    - name: delete data 
+      file: 
+        path: "{{ peer_install_path }}/data"
+        state: absent
+    
+- hosts: orderer
+  tasks:
+    - name: stop
+      shell: "./stop.sh"
+      args:
+        chdir: "{{ orderer_install_path }}"
+    - name: delete data 
+      file: 
+        path: "{{ orderer_install_path }}/data"
+        state: absent
+
+- hosts: orderer
+  tasks:
+    - name: start
+      shell: "./start.sh"
+      args:
+        chdir: "{{ orderer_install_path }}"
+
+- hosts: peer
+  tasks:
+    - name: start
+      shell: "./start.sh"
+      args:
+        chdir: "{{ peer_install_path }}"

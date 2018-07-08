@@ -1,0 +1,29 @@
+- hosts: peer
+  tasks:
+    - name: stop 
+      shell: "./stop.sh"
+      args:
+        chdir: "{{ peer_install_path }}"
+    - name: delete files
+      file: 
+        path: "{{ peer_install_path }}"
+        state: absent
+    - name: delete cli
+      file: 
+        path: "{{ cli_install_path }}"
+        state: absent
+    
+- hosts: orderer
+  tasks:
+    - name: stop
+      shell: "./stop.sh"
+      args:
+        chdir: "{{ orderer_install_path }}"
+    - name: delete files
+      file: 
+        path: "{{ orderer_install_path }}"
+        state: absent
+    - name: delete cli
+      file: 
+        path: "{{ cli_install_path }}"
+        state: absent

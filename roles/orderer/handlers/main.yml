@@ -1,0 +1,4 @@
+- name: restart
+  shell: "./stop.sh && sleep 1 && ./start.sh"
+  args:
+    chdir: "{{ orderer_install_path }}"

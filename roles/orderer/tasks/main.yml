@@ -1,0 +1,56 @@
+- name: create directory
+  file:
+    path: "{{ orderer_install_path }}/{{ item }}"
+    state: directory
+  with_items:
+    - 'bin'
+    - 'tls'
+    - 'msp'
+    - 'log'
+    - 'data'
+
+- name: upload binary
+  notify: restart
+  copy:
+    src: "{{ item }}"
+    dest: "{{ orderer_install_path }}/bin"
+    mode: u=rwx
+  with_items:
+    - "{{ bin_path }}/orderer"
+
+- name: upload files 
+  notify: restart
+  copy:
+    src: "{{ item }}"
+    dest: "{{ orderer_install_path }}"
+  with_items:
+    - "{{ orderer_crypto_path }}/{{ ORG_DOMAIN }}/orderers/{{ inventory_hostname }}/msp"
+    - "{{ orderer_crypto_path }}/{{ ORG_DOMAIN }}/orderers/{{ inventory_hostname }}/tls"
+    - "{{ channel_path }}/genesisblock"
+    - "{{ bin_path }}"
+
+- name: upload script 
+  notify: restart
+  copy:
+    src: "{{ item }}"
+    dest: "{{ orderer_install_path }}"
+    mode: u=rwx
+  with_items:
+    - start.sh
+    - stop.sh
+
+- name: upload template config
+  notify: restart
+  template:
+    src: "{{ item }}.yaml.j2"
+    dest: "{{ orderer_install_path }}/{{ item }}.yaml"
+  with_items:
+    - orderer
+
+- name: upload template config
+  notify: restart
+  template:
+    src: "{{ item }}.conf.j2"
+    dest: "{{ orderer_install_path }}/{{ item }}.conf"
+  with_items:
+    - supervisord

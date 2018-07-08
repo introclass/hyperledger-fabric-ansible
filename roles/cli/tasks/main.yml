@@ -1,0 +1,55 @@
+- name: create directory
+  file:
+    path: "{{ cli_install_path }}/{{ item }}"
+    state: directory
+  with_items:
+    - 'bin'
+    - 'user'
+
+- name: upload binary
+  copy:
+    src: "{{ item }}"
+    dest: "{{ cli_install_path }}/bin"
+    mode: u=rwx
+  with_items:
+    - "{{ bin_path }}/peer"
+    - "{{ bin_path }}/configtxgen"
+    - "{{ bin_path }}/configtxlator"
+    - "{{ bin_path }}/cryptogen"
+
+- name: upload files 
+  copy:
+    src: "{{ item }}"
+    dest: "{{ cli_install_path }}/user/{{ peer_org }}/{{ user }}-{{ peer }}/"
+  with_items:
+    - "{{ peer_crypto_path }}/{{ peer_org }}/users/{{ user }}@{{ peer_org }}/msp"
+    - "{{ peer_crypto_path }}/{{ peer_org }}/users/{{ user }}@{{ peer_org }}/tls"
+    - "{{ orderer_crypto_path }}/{{ orderer_org }}/orderers/{{ orderer }}/msp/tlscacerts/{{ orderer_ca }}"
+    - "{{ channel_path }}"
+
+- name: upload template config
+  template:
+    src: "{{ item }}.yaml.j2"
+    dest: "{{ cli_install_path }}/user/{{ peer_org }}/{{ user }}-{{ peer }}/{{ item }}.yaml"
+  with_items:
+    - core
+
+- name: upload script
+  template:
+    src: "{{ item }}.sh.j2"
+    dest: "{{ cli_install_path }}/user/{{ peer_org }}/{{ user }}-{{ peer }}/{{ item }}.sh"
+    mode: u=rwx
+  with_items:
+    - 0_create_channel
+    - 1_join_channel
+    - 2_set_anchor_peer
+    - 3_install_chaincode
+    - 4_instantiate_chaincode
+    - 5_query_chaincode
+    - 6_invoke_chaincode
+    - 7_upgrade_chaincode
+    - 8_1_package_chaincode
+    - 8_2_signpackage_chaincode
+    - 8_3_install_chaincode
+    - peer
+    - exec
