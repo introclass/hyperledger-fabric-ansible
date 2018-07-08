@@ -7,12 +7,10 @@
 
 要获得更多的内容，可以关注：
 
-        微信公众号： “我的网课”
+        微信公众号： “我的网课”，(关注后可以获得我微信)
         QQ交流群： 576555864
 
-如果视频中有讲解不到位或需要订正的地方，可以加入：
-
-![知识星球区块链实践分享](http://www.lijiaocn.com/img/xiaomiquan-blockchain.jpg)
+如果视频中有讲解不到位或需要订正的地方，可以加入知识星球“区块链实践分享”，（二维码在最后）
 
 ## 目标
 
@@ -198,5 +196,12 @@
 
 ![知识星球区块链实践分享](http://www.lijiaocn.com/img/xiaomiquan-blockchain.jpg)
 
+## 参考
+
+1. [网易云课堂，IT技术快速入门学院][1]
+2. [HyperLedger Fabric进阶实战课][2]
+3. [超级账本&区块链实战文档][3]
+
 [1]: https://study.163.com/provider/400000000376006/course.htm?share=2&shareId=400000000376006 "IT技术快速入门学院" 
 [2]: https://study.163.com/course/courseMain.htm?courseId=1005359012&share=2&shareId=400000000376006 "HyperLedger Fabric进阶实战课"
+[3]: http://www.lijiaocn.com/tags/blockchain.html "超级账本&区块链实战文档"
