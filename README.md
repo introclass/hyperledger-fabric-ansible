@@ -3,13 +3,13 @@ layout: default
 title:  README
 author: lijiaocn@foxmail.com
 createdate: 2018/07/18 19:00:00
-changedate: 2018/07/18 20:57:23
+changedate: 2018/07/18 22:07:27
 
 ---
 
 ## 支持版本
 
-正在适配Fabric 1.2.x，适配成功后，转移到Fabric-1.2.x分支中。
+Fabric 1.2.x
 
 ## 说明
 
@@ -124,9 +124,9 @@ changedate: 2018/07/18 20:57:23
 
 	mkdir -p output/example.com/
 	cd output/example.com/
-	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.1.0/hyperledger-fabric-linux-amd64-1.1.0.tar.gz
-	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.1.0/hyperledger-fabric-linux-amd64-1.1.0.tar.gz.md5
-	tar -xvf hyperledger-fabric-linux-amd64-1.1.0.tar.gz
+	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz
+	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz.md5
+	tar -xvf hyperledger-fabric-linux-amd64-1.2.0.tar.gz
 
 1 在inventories/example.com中创建配置文件，以及ansible需要的hosts文件:
 
@@ -134,25 +134,22 @@ changedate: 2018/07/18 20:57:23
 	crypto-config.yaml
 	hosts
 
-2 准备在运行ansible的机器使用fabric命令：
+2 准备在运行ansible的机器使用fabric命令。
 
-注意事项1：
-
->`prepare.sh`会使用hyperledger fabric的命令，需要把在本地运行的fabric命令放到`output/bin`目录中。
+`prepare.sh`会使用hyperledger fabric的命令，需要把在本地运行的fabric命令放到`output/bin`目录中。
 
 例如，我是在mac上执行ansible的，下载的是darwin版本的fabric：
 
 	mkdir -p output/bin
 	cd output/bin
-	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/darwin-amd64-1.1.0/hyperledger-fabric-darwin-amd64-1.1.0.tar.gz
-	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/darwin-amd64-1.1.0/hyperledger-fabric-darwin-amd64-1.1.0.tar.gz.md5
-	tar -xvf hyperledger-fabric-darwin-amd64-1.1.0.tar.gz
+	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/darwin-amd64-1.2.0/hyperledger-fabric-darwin-amd64-1.2.0.tar.gz
+	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/darwin-amd64-1.2.0/hyperledger-fabric-darwin-amd64-1.2.0.tar.gz.md5
+	tar -xvf hyperledger-fabric-darwin-amd64-1.2.0.tar.gz
+	cd ../../
 
 3 运行perpare.sh生成证书，以及创世块(可以根据需要修改脚本)：
 
 	./prepare.sh example
-
-注意事项2：
 
 >每个部署环境分别在output和inventories中有一个自己的目录，要增加新部署环境除了在output和inventories中准备目录和文件，您还可能需要根据自己的需要在prepare.sh中添加为新的环境生成证书和其它文件的命令。
 
