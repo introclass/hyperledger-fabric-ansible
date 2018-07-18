@@ -3,13 +3,15 @@ layout: default
 title:  README
 author: lijiaocn@foxmail.com
 createdate: 2018/07/18 19:00:00
-changedate: 2018/07/18 22:07:27
+changedate: 2018/07/18 22:11:32
 
 ---
 
 ## 支持版本
 
-Fabric 1.2.x
+已经支持Fabric 1.2.x、Fabric 1.1.x，到同名分支中获取对应的代码。
+
+Master分支用于等待下一个版本。
 
 ## 说明
 
