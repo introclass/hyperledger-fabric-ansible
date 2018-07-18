@@ -25,8 +25,7 @@ logging:
     # 2. The environment variable CORE_LOGGING_LEVEL otherwise applies to
     #    all peer commands if defined as a non-empty string.
     #
-    # 3. The value of peer that directly follows in this file. It can also
-    #    be set via the environment variable CORE_LOGGING_PEER.
+    # 3. The value of `level` that directly follows in this file.
     #
     # If no overall default level is provided via any of the above methods,
     # the peer will default to INFO (the value of defaultLevel in
@@ -35,7 +34,7 @@ logging:
     # Default for all modules running within the scope of a peer.
     # Note: this value is only used when --logging-level or CORE_LOGGING_LEVEL
     #       are not set
-    peer:       info
+    level:       info
 
     # The overall default values mentioned above can be overridden for the
     # specific components listed in the override section below.
@@ -48,10 +47,12 @@ logging:
     #       time.
     cauthdsl:   warning
     gossip:     warning
+    grpc:       error
     ledger:     info
     msp:        warning
     policies:   warning
-    grpc:       error
+    peer:
+        gossip: warning
 
     # Message format for the peer logs
     format: '%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}'
@@ -64,7 +65,7 @@ logging:
 peer:
 
     # The Peer id is used for identifying this Peer instance.
-    id: jdoe
+    id: {{ inventory_hostname }}
 
     # The networkId allows for logical seperation of networks
     networkId: dev
@@ -74,20 +75,18 @@ peer:
     listenAddress: 0.0.0.0:7051
 
     # The endpoint this peer uses to listen for inbound chaincode connections.
-    #
-    # The chaincode connection does not support TLS-mutual auth. Having a
-    # separate listener for the chaincode helps isolate the chaincode
-    # environment for enhanced security, so it is strongly recommended to
-    # uncomment chaincodeListenAddress and specify a protected endpoint.
-    #
-    # If chaincodeListenAddress is not configured or equals to the listenAddress,
-    # listenAddress will be used for chaincode connections. This is not
-    # recommended for production.
-    #
-    # chaincodeListenAddress: 127.0.0.1:7052
+    # If this is commented-out, the listen address is selected to be
+    # the peer's address (see below) with port 7052
+    # chaincodeListenAddress: 0.0.0.0:7052
+
+    # The endpoint the chaincode for this peer uses to connect to the peer.
+    # If this is not specified, the chaincodeListenAddress address is selected.
+    # And if chaincodeListenAddress is not specified, address is selected from
+    # peer listenAddress.
+    # chaincodeAddress: 0.0.0.0:7052
 
     # When used as peer config, this represents the endpoint to other peers
-    # in the same organization for peers in other organization, see
+    # in the same organization. For peers in other organization, see
     # gossip.externalEndpoint for more info.
     # When used as CLI config, this means the peer's endpoint to interact with
     address: 0.0.0.0:7051
@@ -99,6 +98,33 @@ peer:
     # Setting for runtime.GOMAXPROCS(n). If n < 1, it does not change the
     # current setting
     gomaxprocs: -1
+
+    # Keepalive settings for peer server and clients
+    keepalive:
+        # MinInterval is the minimum permitted time between client pings.
+        # If clients send pings more frequently, the peer server will
+        # disconnect them
+        minInterval: 60s
+        # Client keepalive settings for communicating with other peer nodes
+        client:
+            # Interval is the time between pings to peer nodes.  This must
+            # greater than or equal to the minInterval specified by peer
+            # nodes
+            interval: 60s
+            # Timeout is the duration the client waits for a response from
+            # peer nodes before closing the connection
+            timeout: 20s
+        # DeliveryClient keepalive settings for communication with ordering
+        # nodes.
+        deliveryClient:
+            # Interval is the time between pings to ordering nodes.  This must
+            # greater than or equal to the minInterval specified by ordering
+            # nodes.
+            interval: 60s
+            # Timeout is the duration the client waits for a response from
+            # ordering nodes before closing the connection
+            timeout: 20s
+
 
     # Gossip related configuration
     gossip:
@@ -120,12 +146,12 @@ peer:
         # connection with ordering service and use delivery protocol
         # to pull ledger blocks from ordering service. It is recommended to
         # use leader election for large networks of peers.
-        useLeaderElection: false
+        useLeaderElection: true
         # Statically defines peer to be an organization "leader",
         # where this means that current peer will maintain connection
         # with ordering service and disseminate block across peers in
         # its own organization
-        orgLeader: true
+        orgLeader: false
 
         # Overrides the endpoint that the peer publishes to peers
         # in its organization. For peers in foreign organizations
@@ -142,6 +168,7 @@ peer:
         # Number of peers selected to push messages to
         propagatePeerNum: 3
         # Determines frequency of pull phases(unit: second)
+        # Must be greater than digestWaitTime + responseWaitTime
         pullInterval: 4s
         # Number of peers to pull from
         pullPeerNum: 3
@@ -164,9 +191,11 @@ peer:
         # Buffer size of sending messages
         sendBuffSize: 200
         # Time to wait before pull engine processes incoming digests (unit: second)
+        # Should be slightly smaller than requestWaitTime
         digestWaitTime: 1s
-        # Time to wait before pull engine removes incoming nonce (unit: second)
-        requestWaitTime: 1s
+        # Time to wait before pull engine removes incoming nonce (unit: milliseconds)
+        # Should be slightly bigger than digestWaitTime
+        requestWaitTime: 1500ms
         # Time to wait before pull engine ends pull (unit: second)
         responseWaitTime: 2s
         # Alive check interval(unit: second)
@@ -177,7 +206,7 @@ peer:
         reconnectInterval: 25s
         # This is an endpoint that is published to peers outside of the organization.
         # If this isn't set, the peer will not be known to other organizations.
-        externalEndpoint:
+        externalEndpoint: {{ inventory_hostname }}:7051
         # Leader election service configuration
         election:
             # Longest time peer waits for stable membership during leader election startup (unit: second)
@@ -189,6 +218,26 @@ peer:
             # Time between peer sends propose message and declares itself as a leader (sends declaration message) (unit: second)
             leaderElectionDuration: 5s
 
+        pvtData:
+            # pullRetryThreshold determines the maximum duration of time private data corresponding for a given block
+            # would be attempted to be pulled from peers until the block would be committed without the private data
+            pullRetryThreshold: 60s
+            # As private data enters the transient store, it is associated with the peer's ledger's height at that time.
+            # transientstoreMaxBlockRetention defines the maximum difference between the current ledger's height upon commit,
+            # and the private data residing inside the transient store that is guaranteed not to be purged.
+            # Private data is purged from the transient store when blocks with sequences that are multiples
+            # of transientstoreMaxBlockRetention are committed.
+            transientstoreMaxBlockRetention: 1000
+            # pushAckTimeout is the maximum time to wait for an acknowledgement from each peer
+            # at private data push at endorsement time.
+            pushAckTimeout: 3s
+            # Block to live pulling margin, used as a buffer
+            # to prevent peer from trying to pull private data
+            # from peers that is soon to be purged in next N blocks.
+            # This helps a newly joined peer catch up to current
+            # blockchain height quicker.
+            btlPullMargin: 10
+
     # EventHub related configuration
     events:
         # The address that the Event service will be enabled on the peer
@@ -197,36 +246,76 @@ peer:
         # total number of events that could be buffered without blocking send
         buffersize: 100
 
-        # timeout duration for producer to send an event.
-        # if < 0, if buffer full, unblocks immediately and not send
-        # if 0, if buffer full, will block and guarantee the event will be sent out
-        # if > 0, if buffer full, blocks till timeout
+        # timeout configures how long to block when attempting to add an event to a full buffer:
+        #   when timeout < 0 then discard the event and continue
+        #   when timeout = 0 then block until event is added to the buffer
+        #   when timeout > 0 then block and discard the event if the timeout expires
         timeout: 10ms
+
+        # timewindow is the acceptable difference between the peer's current
+        # time and the client's time as specified in a registration event
+        timewindow: 15m
+
+        # Keepalive settings for peer server and clients
+        keepalive:
+            # MinInterval is the minimum permitted time in seconds which clients
+            # can send keepalive pings.  If clients send pings more frequently,
+            # the events server will disconnect them
+            minInterval: 60s
+
+        # the timeout to send events over the GRPC stream to clients
+        sendTimeout: 60s
 
     # TLS Settings
     # Note that peer-chaincode connections through chaincodeListenAddress is
     # not mutual TLS auth. See comments on chaincodeListenAddress for more info
     tls:
-        enabled:  true
+        # Require server-side TLS
+        enabled: true
+        # Require client certificates / mutual TLS.
+        # Note that clients that are not configured to use a certificate will
+        # fail to connect to the peer.
+        clientAuthRequired: true
+        # X.509 certificate used for TLS server
         cert:
-            file: tls/client.crt
+            file: tls/server.crt
+        # Private key used for TLS server (and client if clientAuthEnabled
+        # is set to true
         key:
-            file: tls/client.key
+            file: tls/server.key
+        # Trusted root certificate chain for tls.cert
         rootcert:
             file: tls/ca.crt
+        # Set of root certificate authorities used to verify client certificates
+        clientRootCAs:
+            files:
+              - tls/ca.crt
+        # Private key used for TLS when making client connections.  If
+        # not set, peer.tls.key.file will be used instead
+        clientKey:
+            file: tls/client.key
+        # X.509 certificate used for TLS when making client connections.
+        # If not set, peer.tls.cert.file will be used instead
+        clientCert:
+            file: tls/client.crt
 
-        # The server name use to verify the hostname returned by TLS handshake
-        serverhostoverride:
+    # Authentication contains configuration parameters related to authenticating
+    # client messages
+    authentication:
+        # the acceptable difference between the current server time and the
+        # client's time as specified in a client request message
+        timewindow: 15m
 
     # Path on the file system where peer will store data (eg ledger). This
     # location must be access control protected to prevent unintended
     # modification that might corrupt the peer operations.
-    fileSystemPath: /var/hyperledger/production
+    fileSystemPath: ./data
 
     # BCCSP (Blockchain crypto provider): Select which crypto implementation or
     # library to use
     BCCSP:
         Default: SW
+        # Settings for the SW crypto provider (i.e. when DEFAULT: SW)
         SW:
             # TODO: The default Hash and Security level needs refactoring to be
             # fully configurable. Changing these defaults requires coordination
@@ -236,7 +325,18 @@ peer:
             # Location of Key Store
             FileKeyStore:
                 # If "", defaults to 'mspConfigPath'/keystore
-                # TODO: Ensure this is read with fabric/core/config.GetPath() once ready
+                KeyStore:
+        # Settings for the PKCS#11 crypto provider (i.e. when DEFAULT: PKCS11)
+        PKCS11:
+            # Location of the PKCS11 module library
+            Library:
+            # Token Label
+            Label:
+            # User PIN
+            Pin:
+            Hash:
+            Security:
+            FileKeyStore:
                 KeyStore:
 
     # Path on the file system where peer will find MSP local configurations
@@ -249,7 +349,27 @@ peer:
     # to match the name of one of the MSPs in each of the channel
     # that this peer is a member of. Otherwise this peer's messages
     # will not be identified as valid by other nodes.
-    localMspId: DEFAULT
+    localMspId: {{ MSPID }}
+
+    # CLI common client config options
+    client:
+        # connection timeout
+        connTimeout: 3s
+
+    # Delivery service related config
+    deliveryclient:
+        # It sets the total time the delivery service may spend in reconnection
+        # attempts until its retry logic gives up and returns an error
+        reconnectTotalTimeThreshold: 3600s
+
+        # It sets the delivery service <-> ordering service node connection timeout
+        connTimeout: 3s
+
+        # It sets the delivery service maximal delay between consecutive retries
+        reConnectBackoffThreshold: 3600s
+
+    # Type for the local MSP - by default it's of type bccsp
+    localMspType: bccsp
 
     # Used with Go profiling tools only in none production environment. In
     # production, it should be disabled (eg enabled: false)
@@ -257,6 +377,89 @@ peer:
         enabled:     false
         listenAddress: 0.0.0.0:6060
 
+    # The admin service is used for administrative operations such as
+    # control over log module severity, etc.
+    # Only peer administrators can use the service.
+    adminService:
+        # The interface and port on which the admin server will listen on.
+        # If this is commented out, or the port number is equal to the port
+        # of the peer listen address - the admin service is attached to the
+        # peer's service (defaults to 7051).
+        #listenAddress: 0.0.0.0:7055
+
+    # Handlers defines custom handlers that can filter and mutate
+    # objects passing within the peer, such as:
+    #   Auth filter - reject or forward proposals from clients
+    #   Decorators  - append or mutate the chaincode input passed to the chaincode
+    #   Endorsers   - Custom signing over proposal response payload and its mutation
+    # Valid handler definition contains:
+    #   - A name which is a factory method name defined in
+    #     core/handlers/library/library.go for statically compiled handlers
+    #   - library path to shared object binary for pluggable filters
+    # Auth filters and decorators are chained and executed in the order that
+    # they are defined. For example:
+    # authFilters:
+    #   -
+    #     name: FilterOne
+    #     library: /opt/lib/filter.so
+    #   -
+    #     name: FilterTwo
+    # decorators:
+    #   -
+    #     name: DecoratorOne
+    #   -
+    #     name: DecoratorTwo
+    #     library: /opt/lib/decorator.so
+    # Endorsers are configured as a map that its keys are the endorsement system chaincodes that are being overridden.
+    # Below is an example that overrides the default ESCC and uses an endorsement plugin that has the same functionality
+    # as the default ESCC.
+    # If the 'library' property is missing, the name is used as the constructor method in the builtin library similar
+    # to auth filters and decorators.
+    # endorsers:
+    #   escc:
+    #     name: DefaultESCC
+    #     library: /etc/hyperledger/fabric/plugin/escc.so
+    handlers:
+        authFilters:
+          -
+            name: DefaultAuth
+          -
+            name: ExpirationCheck    # This filter checks identity x509 certificate expiration
+        decorators:
+          -
+            name: DefaultDecorator
+        endorsers:
+          escc:
+            name: DefaultEndorsement
+            library:
+        validators:
+          vscc:
+            name: DefaultValidation
+            library:
+
+    #    library: /etc/hyperledger/fabric/plugin/escc.so
+    # Number of goroutines that will execute transaction validation in parallel.
+    # By default, the peer chooses the number of CPUs on the machine. Set this
+    # variable to override that choice.
+    # NOTE: overriding this value might negatively influence the performance of
+    # the peer so please change this value only if you know what you're doing
+    validatorPoolSize:
+
+    # The discovery service is used by clients to query information about peers,
+    # such as - which peers have joined a certain channel, what is the latest
+    # channel config, and most importantly - given a chaincode and a channel,
+    # what possible sets of peers satisfy the endorsement policy.
+    discovery:
+        enabled: true
+        # Whether the authentication cache is enabled or not.
+        authCacheEnabled: true
+        # The maximum size of the cache, after which a purge takes place
+        authCacheMaxSize: 1000
+        # The proportion (0 to 1) of entries that remain in the cache after the cache is purged due to overpopulation
+        authCachePurgeRetentionRatio: 0.75
+        # Whether to allow non-admins to perform non channel scoped queries.
+        # When this is false, it means that only peer admins can perform non channel scoped queries.
+        orgMembersAllowedAccess: false
 ###############################################################################
 #
 #    VM section
@@ -313,9 +516,6 @@ vm:
 #
 ###############################################################################
 chaincode:
-    # This is used if chaincode endpoint resolution fails with the
-    # chaincodeListenAddress property
-    peerAddress:
 
     # The id is used by the Chaincode stub to register the executing Chaincode
     # ID with the Peer and is generally supplied through ENV variables
@@ -326,11 +526,19 @@ chaincode:
         name:
 
     # Generic builder environment, suitable for most chaincode types
-    builder: $(DOCKER_NS)/fabric-ccenv:$(ARCH)-$(PROJECT_VERSION)
+    builder: $(DOCKER_NS)/fabric-ccenv:latest
+
+    # Enables/disables force pulling of the base docker images (listed below)
+    # during user chaincode instantiation.
+    # Useful when using moving image tags (such as :latest)
+    pull: false
 
     golang:
         # golang will never need more than baseos
         runtime: $(BASE_DOCKER_NS)/fabric-baseos:$(ARCH)-$(BASE_VERSION)
+
+        # whether or not golang chaincode should be linked dynamically
+        dynamicLink: false
 
     car:
         # car may need more facilities (JVM, etc) in the future as the catalog
@@ -343,7 +551,12 @@ chaincode:
         # This image is packed with shim layer libraries that are necessary
         # for Java chaincode runtime.
         Dockerfile:  |
-            from $(DOCKER_NS)/fabric-javaenv:$(ARCH)-$(PROJECT_VERSION)
+            from $(DOCKER_NS)/fabric-javaenv:$(ARCH)-1.1.0
+
+    node:
+        # need node.js engine at runtime, currently available in baseimage
+        # but not in baseos
+        runtime: $(BASE_DOCKER_NS)/fabric-baseimage:$(ARCH)-$(BASE_VERSION)
 
     # Timeout duration for starting up a container and waiting for Register
     # to come through. 1sec should be plenty for chaincode unit tests
@@ -380,6 +593,20 @@ chaincode:
         escc: enable
         vscc: enable
         qscc: enable
+
+    # System chaincode plugins: in addition to being imported and compiled
+    # into fabric through core/chaincode/importsysccs.go, system chaincodes
+    # can also be loaded as shared objects compiled as Go plugins.
+    # See examples/plugins/scc for an example.
+    # Like regular system chaincodes, plugins must also be white listed in the
+    # chaincode.system section above.
+    systemPlugins:
+      # example configuration:
+      # - enabled: true
+      #   name: myscc
+      #   path: /opt/lib/myscc.so
+      #   invokableExternal: true
+      #   invokableCC2CC: true
 
     # Logging section for the chaincode container
     logging:
@@ -426,7 +653,16 @@ ledger:
        requestTimeout: 35s
        # Limit on the number of records to return per query
        queryLimit: 10000
-
+       # Limit on the number of records per CouchDB bulk update batch
+       maxBatchUpdateSize: 1000
+       # Warm indexes after every N blocks.
+       # This option warms any indexes that have been
+       # deployed to CouchDB after every N blocks.
+       # A value of 1 will warm indexes after every block commit,
+       # to ensure fast selector queries.
+       # Increasing the value may improve write efficiency of peer and CouchDB,
+       # but may degrade query response time.
+       warmIndexesAfterNBlocks: 1
 
   history:
     # enableHistoryDatabase - options are true or false
@@ -434,3 +670,37 @@ ledger:
     # All history 'index' will be stored in goleveldb, regardless if using
     # CouchDB or alternate database for the state.
     enableHistoryDatabase: true
+
+###############################################################################
+#
+#    Metrics section
+#
+#
+###############################################################################
+metrics:
+        # enable or disable metrics server
+        enabled: false
+
+        # when enable metrics server, must specific metrics reporter type
+        # currently supported type: "statsd","prom"
+        reporter: statsd
+
+        # determines frequency of report metrics(unit: second)
+        interval: 1s
+
+        statsdReporter:
+
+              # statsd server address to connect
+              address: 0.0.0.0:8125
+
+              # determines frequency of push metrics to statsd server(unit: second)
+              flushInterval: 2s
+
+              # max size bytes for each push metrics request
+              # intranet recommend 1432 and internet recommend 512
+              flushBytes: 1432
+
+        promReporter:
+
+              # prometheus http server listen address for pull metrics
+              listenAddress: 0.0.0.0:8080

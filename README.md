@@ -1,6 +1,15 @@
+---
+layout: default
+title:  README
+author: lijiaocn@foxmail.com
+createdate: 2018/07/18 19:00:00
+changedate: 2018/07/18 20:57:23
+
+---
+
 ## 支持版本
 
-这里正在为1.2.X做准备，已经支持的版本在同名的分支中。
+正在适配Fabric 1.2.x，适配成功后，转移到Fabric-1.2.x分支中。
 
 ## 说明
 
@@ -16,7 +25,78 @@
 
 如果视频中有讲解不到位或需要订正的地方，可以加入知识星球“区块链实践分享”，（二维码在最后）
 
-## 目标
+## 从 Fabric 1.1 升级到 Fabric 1.2
+
+**重要**: 升级要在部署Fabric 1.1时使用的`hyperledger-fabric-ansible`目录中进行操作。
+
+备份上一个版本的二进制文件，注意只备份bin和config：
+
+	cd output/example.com
+	mv bin bin-1.1.0
+	mv config config-1.1.0
+
+**注意1**：不要改动output/example.com中的`crypto-config`，这个目录中存放的是证书，在升级时不应当被更新！
+
+下载1.2版本的文件:
+
+	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz
+	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz.md5
+	tar -xvf hyperledger-fabric-linux-amd64-1.2.0.tar.gz
+
+对比config和config-1.1.0中的文件，看一下1.2.0版本的配置文件中引入了哪些新的配置。
+
+将原先的配置文件备份：
+
+	mv ../../roles/peer/templates/core.yaml.j2 config-1.1.0/
+	mv ../../roles/orderer/templates/orderer.yaml.j2 config-1.1.0/
+	mv ../../roles/cli/templates/core.yaml.j2 config-1.1.0/
+
+然后在config中准备最新的配置模版：
+
+	cd config
+	cp core.yaml core.server.yaml.j2
+	cp core.yaml core.client.yaml.j2
+	cp orderer.yaml  orderer.yaml.j2
+
+编辑core.yaml.j2和orderer.yaml.j2之后，将其复制到对应的目录：
+
+	cp `pwd`/config/orderer.yaml.j2       ../../roles/orderer/templates/orderer.yaml.j2
+	cp `pwd`/config/core.server.yaml.j2   ../../roles/peer/templates/core.yaml.j2
+	cp `pwd`/config/core.client.yaml.j2   ../../roles/cli/templates/core.yaml.j2
+
+
+**注意2**：下面是直接关停所有节点，然后用anbile一次替换所有节点上的程序文件，生产环境中注意要逐台升级，并做好备份！
+
+关停节点：
+
+	ansible-playbook -i inventories/example.com/hosts -u root ./playbooks/manage_stop.yml
+
+`Ansible脚本能确保只更新发生了变化的文件，应当只有程序文件或者更新后的配置文件被更新`
+
+更新所有机器上的程序文件：
+
+	ansible-playbook -i inventories/example.com/hosts -u root deploy_nodes.yml
+
+更新cli中的程序文件：
+
+	ansible-playbook -i inventories/example.com/hosts -u root deploy_cli.yml
+
+验证:
+
+	$ cd /opt/app/fabric/cli/user/member1.example.com/Admin-peer0.member1.example.com
+	$ ./peer.sh node status
+	status:STARTED
+
+原先的数据和合约依旧可以使用：
+
+	$ ./5_query_chaincode.sh
+	key1value
+
+## 直接部署
+
+直接部署过程与分支Fabric-1.1.x的部署过程类似，只是将程序文件换成了1.2.0版本。
+
+### 目标
 
 在192.168.88.10、192.168.88.11、192.168.88.12上部署一个有两个组织三个Peer组成的联盟。
 
@@ -38,7 +118,7 @@
 
 共识算法是solo，如果要切换为其它共识算法，例如kafka，需要另外部署kafka，并修改配置文件。
 
-## 准备
+### 准备
 
 0 将要部署到目标环境中的二进制文件复制到output/example.com/bin/目录中
 
@@ -76,7 +156,7 @@
 
 >每个部署环境分别在output和inventories中有一个自己的目录，要增加新部署环境除了在output和inventories中准备目录和文件，您还可能需要根据自己的需要在prepare.sh中添加为新的环境生成证书和其它文件的命令。
 
-## 部署
+### 部署
 
 1 初始化目标机器
 
@@ -99,7 +179,7 @@
 
 	ansible-playbook -i inventories/example.com/hosts -u root deploy_cli.yml
 
-## Fabric初始化
+### Fabric初始化
 
 1 进入member1的管理员目录，对peer0.member1.example.com进行操作：
 
@@ -129,7 +209,7 @@
 	//设置锚点Peer：
 	./2_set_anchor_peer.sh
 
-## 部署合约
+### 部署合约
 
 1 进入member1的管理员目录，对peer0.member1.example.com进行操作：
 
@@ -173,7 +253,7 @@
 
 	./5_query_chaincode.sh
 
-## 管理操作
+### 管理操作
 
 1 启动链：
 
