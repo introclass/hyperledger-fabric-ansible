@@ -6,7 +6,7 @@
 #
 
 # current version of fabric released
-export VERSION=${1:-1.0.4}
+export VERSION=${1:-1.2.0}
 # current version of fabric-ca released
 export CA_VERSION=${2:-$VERSION}
 # current version of thirdparty images (couchdb, kafka and zookeeper) released

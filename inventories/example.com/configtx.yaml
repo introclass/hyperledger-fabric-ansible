@@ -1,9 +1,139 @@
+Organizations:
+    - &Orderer-Member1
+        Name: orderers.member1.example.com 
+        ID: orderers.member1.example.com
+        MSPDir: ../../output/example.com/crypto-config/ordererOrganizations/member1.example.com/msp
+    - &Peer-Member1
+        Name: peers.member1.example.com
+        ID: peers.member1.example.com
+        MSPDir: ../../output/example.com/crypto-config/peerOrganizations/member1.example.com/msp
+        Policies: &Peer-Member1-Policies
+            Readers:
+                Type: Signature
+                Rule: "OR('peers.member1.example.com.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('peers.member1.example.com.admin','peers.member1.example.com.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('peers.member1.example.com.admin')"
+        AnchorPeers:
+            - Host: peer0.member1.example.com
+              Port: 7051
+    - &Peer-Member2
+        Name: peers.member2.example.com
+        ID: peers.member2.example.com
+        MSPDir: ../../output/example.com/crypto-config/peerOrganizations/member2.example.com/msp
+        Policies: &Peer-Member2-Policies
+            Readers:
+                Type: Signature
+                Rule: "OR('peers.member2.example.com.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('peers.member2.example.com.admin','peers.member2.example.com.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('peers.member2.example.com.admin')"
+        AnchorPeers:
+            - Host: peer0.member2.example.com
+              Port: 7051
+Capabilities:
+    Global: &ChannelCapabilities
+        V1_1: true
+    Orderer: &OrdererCapabilities
+        V1_1: true
+    Application: &ApplicationCapabilities
+        V1_2: true
+
+Application: &ApplicationDefaults
+    ACLs: &ACLsDefault
+        lscc/ChaincodeExists: /Channel/Application/Readers
+        lscc/GetDeploymentSpec: /Channel/Application/Readers
+        lscc/GetChaincodeData: /Channel/Application/Readers
+        lscc/GetInstantiatedChaincodes: /Channel/Application/Readers
+        qscc/GetChainInfo: /Channel/Application/Readers
+        qscc/GetBlockByNumber: /Channel/Application/Readers
+        qscc/GetBlockByHash: /Channel/Application/Readers
+        qscc/GetTransactionByID: /Channel/Application/Readers
+        qscc/GetBlockByTxID: /Channel/Application/Readers
+        cscc/GetConfigBlock: /Channel/Application/Readers
+        cscc/GetConfigTree: /Channel/Application/Readers
+        cscc/SimulateConfigTreeUpdate: /Channel/Application/Readers
+        peer/Propose: /Channel/Application/Writers
+        peer/ChaincodeToChaincode: /Channel/Application/Readers
+        event/Block: /Channel/Application/Readers
+        event/FilteredBlock: /Channel/Application/Readers
+    Organizations:
+    Policies: &ApplicationDefaultPolicies
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+    OrdererType: solo
+    Addresses:
+        - orderer0.member1.example.com:7050
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    MaxChannels: 0
+    Kafka:
+        Brokers:
+        Brokers:
+            - kafka0:9092
+            - kafka1:9092
+            - kafka2:9092
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+    Capabilities:
+        <<: *OrdererCapabilities
+
+Channel: &ChannelDefaults
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+    Capabilities:
+        <<: *ChannelCapabilities
+
 Profiles:
     OrdererGenesis:
+        Capabilities:
+            <<: *ChannelCapabilities
         Orderer:
             <<: *OrdererDefaults
             Organizations:
                 - *Orderer-Member1
+            Capabilities:
+                <<: *OrdererCapabilities
         Consortiums:
             SampleConsortium:
                 Organizations:
@@ -16,37 +146,5 @@ Profiles:
             Organizations:
                  - *Peer-Member1
                  - *Peer-Member2
-Organizations:
-    - &Orderer-Member1
-        Name: orderers.member1.example.com 
-        ID: orderers.member1.example.com
-        MSPDir: ../../output/example.com/crypto-config/ordererOrganizations/member1.example.com/msp
-    - &Peer-Member1
-        Name: peers.member1.example.com
-        ID: peers.member1.example.com
-        MSPDir: ../../output/example.com/crypto-config/peerOrganizations/member1.example.com/msp
-        AnchorPeers:
-            - Host: peer0.member1.example.com
-              Port: 7051
-    - &Peer-Member2
-        Name: peers.member2.example.com
-        ID: peers.member2.example.com
-        MSPDir: ../../output/example.com/crypto-config/peerOrganizations/member2.example.com/msp
-        AnchorPeers:
-            - Host: peer0.member2.example.com
-              Port: 7051
-Orderer: &OrdererDefaults
-    OrdererType: solo
-    Addresses:
-        - orderer0.member1.example.com:7050
-    BatchTimeout: 2s
-    BatchSize:
-        MaxMessageCount: 10
-        AbsoluteMaxBytes: 99 MB
-        PreferredMaxBytes: 512 KB
-    Kafka:
-        Brokers:
-            - 127.0.0.1:9092
-    Organizations:
-Application: &ApplicationDefaults
-    Organizations:
+            Capabilities:
+                <<: *ApplicationCapabilities

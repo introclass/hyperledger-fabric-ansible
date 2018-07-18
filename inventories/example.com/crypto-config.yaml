@@ -6,12 +6,14 @@ OrdererOrgs:
 PeerOrgs:
   - Name: Peer-Member1
     Domain: member1.example.com
+    EnableNodeOUs: true
     Template:
       Count: 2
     Users:
       Count: 1
   - Name: Peer-Member2
     Domain: member2.example.com
+    EnableNodeOUs: true
     Template:
       Count: 1
     Users:

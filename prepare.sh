@@ -94,6 +94,6 @@ case $1 in
 	generateChannelArtifacts `pwd`/inventories/example.com/ `pwd`/output/example.com/channel-artifacts
 	;;
 	* )
-	echo "usage: $0 stag"
+	echo "usage: $0 example"
 	;;
 esac
