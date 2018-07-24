@@ -1,3 +1,12 @@
+---
+layout: default
+title:  README
+author: 李佶澳
+createdate: 2018/07/24 12:48:00
+changedate: 2018/07/24 14:37:22
+
+---
+
 ## 支持版本
 
 Fabric-1.1.x，对其它版本的支持在与版本号同名的Branch中。
@@ -47,6 +56,12 @@ Fabric-1.1.x，对其它版本的支持在与版本号同名的Branch中。
 	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.1.0/hyperledger-fabric-linux-amd64-1.1.0.tar.gz
 	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.1.0/hyperledger-fabric-linux-amd64-1.1.0.tar.gz.md5
 	tar -xvf hyperledger-fabric-linux-amd64-1.1.0.tar.gz
+
+使用yum安装Docker，可能会因为qiang的原因安装失败，需要提前下载rpm：
+
+	mkdir -p roles/prepare/files/
+	cd roles/prepare/files/
+	wget https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-18.03.1.ce-1.el7.centos.x86_64.rpm
 
 1 在inventories/example.com中创建配置文件，以及ansible需要的hosts文件:
 
@@ -99,6 +114,13 @@ Fabric-1.1.x，对其它版本的支持在与版本号同名的Branch中。
 
 	ansible-playbook -i inventories/example.com/hosts -u root deploy_cli.yml
 
+6 如果要在当前机器上，操作所有peer，可以在本地安装所有peer的客户端：
+
+	sudo mkdir /opt/app
+	chown lijiao /opt/app/
+	ansible-playbook -i inventories/example.com/hosts -u root deploy_cli_local.yml
+	//注意配置本地的host
+
 ## Fabric初始化
 
 1 进入member1的管理员目录，对peer0.member1.example.com进行操作：
@@ -131,6 +153,19 @@ Fabric-1.1.x，对其它版本的支持在与版本号同名的Branch中。
 
 ## 部署合约
 
+在实例化合约的时候，会联网下载几个比较大的镜像（2～3G），会导致合约实例化等待非常长的时间。
+
+可以从[素材下载][5]中下载已经打包好的docker镜像，将其在每个Peer上导入:
+
+	tar -xvf docker-images.tar.gz
+	cd docker-images
+	./load.sh
+
+或者提前到每个Peer上执行：
+
+	docker pull hyperledger/fabric-javaenv:x86_64-1.1.0
+	docker pull hyperledger/fabric-ccenv:x86_64-1.1.0
+
 1 进入member1的管理员目录，对peer0.member1.example.com进行操作：
 
 	cd /opt/app/fabric/cli/user/member1.example.com/Admin-peer0.member1.example.com/
@@ -144,7 +179,7 @@ Fabric-1.1.x，对其它版本的支持在与版本号同名的Branch中。
 	//查看已经安装的合约
 	./peer.sh chaincode list --installed
 	
-	//合约实例化，只需要实例化一次
+	//合约实例化，只需要实例化一次，这个过程docker会拉取镜像，会比较慢。
 	./4_instantiate_chaincode.sh
 
 2 在其它Peer上部署合约
@@ -208,8 +243,10 @@ Fabric-1.1.x，对其它版本的支持在与版本号同名的Branch中。
 2. [HyperLedger Fabric进阶实战课][2]
 3. [超级账本&区块链实战文档][3]
 4. [HyperLedger Fabric原版文档中文批注][4]
+5. [素材下载][5]
 
 [1]: https://study.163.com/provider/400000000376006/course.htm?share=2&shareId=400000000376006 "IT技术快速入门学院" 
 [2]: https://study.163.com/course/courseMain.htm?courseId=1005359012&share=2&shareId=400000000376006 "HyperLedger Fabric进阶实战课"
 [3]: http://www.lijiaocn.com/tags/blockchain.html "超级账本&区块链实战文档"
 [4]: http://fabric.lijiaocn.com "HyperLedger Fabric原版文档中文批注"
+[5]: https://pan.baidu.com/s/1XgPqCM_-awUjTLb8Nc6jtg "素材下载"

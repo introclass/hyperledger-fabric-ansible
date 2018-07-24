@@ -4,6 +4,8 @@
       user: root
       key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
+
 - name: install dependent packages
   import_tasks: centos.yml
   when: ansible_distribution == "CentOS"
+
