@@ -1,0 +1,10 @@
+[couchdb]
+database_dir =  {{ couchdb_data_path }}
+view_index_dir = {{ couchdb_data_path }}
+
+[chttpd]
+port = 5984
+bind_address = 0.0.0.0
+
+[admins]
+{{ COUCH_USER }} = {{ COUCH_PASS }}

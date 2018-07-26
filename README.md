@@ -1,9 +1,9 @@
 ---
 layout: default
 title:  README
-author: lijiaocn@foxmail.com
+author: 李佶澳
 createdate: 2018/07/18 19:00:00
-changedate: 2018/07/18 22:07:27
+changedate: 2018/07/26 13:08:04
 
 ---
 
@@ -25,76 +25,32 @@ Fabric 1.2.x
 
 如果视频中有讲解不到位或需要订正的地方，可以加入知识星球“区块链实践分享”，（二维码在最后）
 
-## 从 Fabric 1.1 升级到 Fabric 1.2
-
-**重要**: 升级要在部署Fabric 1.1时使用的`hyperledger-fabric-ansible`目录中进行操作。
-
-备份上一个版本的二进制文件，注意只备份bin和config：
-
-	cd output/example.com
-	mv bin bin-1.1.0
-	mv config config-1.1.0
-
-**注意1**：不要改动output/example.com中的`crypto-config`，这个目录中存放的是证书，在升级时不应当被更新！
-
-下载1.2版本的文件:
-
-	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz
-	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz.md5
-	tar -xvf hyperledger-fabric-linux-amd64-1.2.0.tar.gz
-
-对比config和config-1.1.0中的文件，看一下1.2.0版本的配置文件中引入了哪些新的配置。
-
-将原先的配置文件备份：
-
-	mv ../../roles/peer/templates/core.yaml.j2 config-1.1.0/
-	mv ../../roles/orderer/templates/orderer.yaml.j2 config-1.1.0/
-	mv ../../roles/cli/templates/core.yaml.j2 config-1.1.0/
-
-然后在config中准备最新的配置模版：
-
-	cd config
-	cp core.yaml core.server.yaml.j2
-	cp core.yaml core.client.yaml.j2
-	cp orderer.yaml  orderer.yaml.j2
-
-编辑core.yaml.j2和orderer.yaml.j2之后，将其复制到对应的目录：
-
-	cp `pwd`/config/orderer.yaml.j2       ../../roles/orderer/templates/orderer.yaml.j2
-	cp `pwd`/config/core.server.yaml.j2   ../../roles/peer/templates/core.yaml.j2
-	cp `pwd`/config/core.client.yaml.j2   ../../roles/cli/templates/core.yaml.j2
-
-
-**注意2**：下面是直接关停所有节点，然后用anbile一次替换所有节点上的程序文件，生产环境中注意要逐台升级，并做好备份！
-
-关停节点：
-
-	ansible-playbook -i inventories/example.com/hosts -u root ./playbooks/manage_stop.yml
-
-`Ansible脚本能确保只更新发生了变化的文件，应当只有程序文件或者更新后的配置文件被更新`
-
-更新所有机器上的程序文件：
-
-	ansible-playbook -i inventories/example.com/hosts -u root deploy_nodes.yml
-
-更新cli中的程序文件：
-
-	ansible-playbook -i inventories/example.com/hosts -u root deploy_cli.yml
-
-验证:
-
-	$ cd /opt/app/fabric/cli/user/member1.example.com/Admin-peer0.member1.example.com
-	$ ./peer.sh node status
-	status:STARTED
-
-原先的数据和合约依旧可以使用：
-
-	$ ./5_query_chaincode.sh
-	key1value
-
-## 直接部署
+## 直接部署Fabric-1.2.x
 
 直接部署过程与分支Fabric-1.1.x的部署过程类似，只是将程序文件换成了1.2.0版本。
+
+	 Version: 1.2.0
+	 Commit SHA: cae2ad4
+	 Go version: go1.10
+	 OS/Arch: linux/amd64
+	 Experimental features: false
+	 Chaincode:
+	  Base Image Version: 0.4.10
+	  Base Docker Namespace: hyperledger
+	  Base Docker Label: org.hyperledger.fabric
+	  Docker Namespace: hyperledger
+
+	$(DOCKER_NS)/fabric-ccenv:latest
+	$(BASE_DOCKER_NS)/fabric-baseos:$(ARCH)-$(BASE_VERSION)
+	$(DOCKER_NS)/fabric-javaenv:$(ARCH)-1.1.0
+	$(BASE_DOCKER_NS)/fabric-baseimage:$(ARCH)-$(BASE_VERSION)
+
+Fabric1.2.x默认使用下面的镜像，最好在peer上提前下载好：
+
+	docker pull hyperledger/fabric-ccenv:latest
+	docker pull hyperledger/fabric-baseos:amd64-0.4.10
+	docker pull hyperledger/fabric-javaenv:x86_64-1.1.0     //for java
+	docker pull hyperledger/fabric-baseimage:amd64-0.4.10   //for node.js
 
 ### 目标
 
@@ -127,6 +83,7 @@ Fabric 1.2.x
 	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz
 	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz.md5
 	tar -xvf hyperledger-fabric-linux-amd64-1.2.0.tar.gz
+	cd ../../
 
 1 在inventories/example.com中创建配置文件，以及ansible需要的hosts文件:
 
@@ -138,7 +95,7 @@ Fabric 1.2.x
 
 `prepare.sh`会使用hyperledger fabric的命令，需要把在本地运行的fabric命令放到`output/bin`目录中。
 
-例如，我是在mac上执行ansible的，下载的是darwin版本的fabric：
+我是在mac上执行ansible的，下载的是darwin版本的fabric：
 
 	mkdir -p output/bin
 	cd output/bin
@@ -267,6 +224,74 @@ Fabric 1.2.x
 4 销毁链：
 
 	ansible-playbook -i inventories/example.com/hosts -u root playbooks/manage_destroy.yml
+
+
+## 从 Fabric 1.1 升级到 Fabric 1.2
+
+**重要**: 升级要在部署Fabric 1.1时使用的`hyperledger-fabric-ansible`目录中进行操作。
+
+备份上一个版本的二进制文件，注意只备份bin和config：
+
+	cd output/example.com
+	mv bin bin-1.1.0
+	mv config config-1.1.0
+
+**注意1**：不要改动output/example.com中的`crypto-config`，这个目录中存放的是证书，在升级时不应当被更新！
+
+下载1.2版本的文件:
+
+	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz
+	wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz.md5
+	tar -xvf hyperledger-fabric-linux-amd64-1.2.0.tar.gz
+
+对比config和config-1.1.0中的文件，看一下1.2.0版本的配置文件中引入了哪些新的配置。
+
+将原先的配置文件备份：
+
+	mv ../../roles/peer/templates/core.yaml.j2 config-1.1.0/
+	mv ../../roles/orderer/templates/orderer.yaml.j2 config-1.1.0/
+	mv ../../roles/cli/templates/core.yaml.j2 config-1.1.0/
+
+然后在config中准备最新的配置模版：
+
+	cd config
+	cp core.yaml core.server.yaml.j2
+	cp core.yaml core.client.yaml.j2
+	cp orderer.yaml  orderer.yaml.j2
+
+编辑core.yaml.j2和orderer.yaml.j2之后，将其复制到对应的目录：
+
+	cp `pwd`/config/orderer.yaml.j2       ../../roles/orderer/templates/orderer.yaml.j2
+	cp `pwd`/config/core.server.yaml.j2   ../../roles/peer/templates/core.yaml.j2
+	cp `pwd`/config/core.client.yaml.j2   ../../roles/cli/templates/core.yaml.j2
+
+
+**注意2**：下面是直接关停所有节点，然后用anbile一次替换所有节点上的程序文件，生产环境中注意要逐台升级，并做好备份！
+
+关停节点：
+
+	ansible-playbook -i inventories/example.com/hosts -u root ./playbooks/manage_stop.yml
+
+`Ansible脚本能确保只更新发生了变化的文件，应当只有程序文件或者更新后的配置文件被更新`
+
+更新所有机器上的程序文件：
+
+	ansible-playbook -i inventories/example.com/hosts -u root deploy_nodes.yml
+
+更新cli中的程序文件：
+
+	ansible-playbook -i inventories/example.com/hosts -u root deploy_cli.yml
+
+验证:
+
+	$ cd /opt/app/fabric/cli/user/member1.example.com/Admin-peer0.member1.example.com
+	$ ./peer.sh node status
+	status:STARTED
+
+原先的数据和合约依旧可以使用：
+
+	$ ./5_query_chaincode.sh
+	key1value
 
 ## 联系
 

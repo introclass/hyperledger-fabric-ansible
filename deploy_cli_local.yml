@@ -1,0 +1,35 @@
+- hosts: localhost
+  vars:
+     orderer_org: member1.example.com
+     orderer: orderer0.member1.example.com
+     orderer_ca: tlsca.member1.example.com-cert.pem
+     peer_org: member1.example.com
+     peer: peer0.member1.example.com
+     mspid: peers.member1.example.com 
+     user: Admin
+  roles:
+    - cli
+
+- hosts: localhost
+  vars:
+     orderer_org: member1.example.com
+     orderer: orderer0.member1.example.com
+     orderer_ca: tlsca.member1.example.com-cert.pem
+     peer_org: member1.example.com
+     peer: peer1.member1.example.com
+     mspid: peers.member1.example.com 
+     user: Admin
+  roles:
+    - cli
+
+- hosts: localhost
+  vars:
+     orderer_org: member1.example.com
+     orderer: orderer0.member1.example.com
+     orderer_ca: tlsca.member1.example.com-cert.pem
+     peer_org: member2.example.com
+     peer: peer0.member2.example.com
+     mspid: peers.member2.example.com 
+     user: Admin
+  roles:
+    - cli

@@ -12,6 +12,14 @@
       file: 
         path: "{{ cli_install_path }}"
         state: absent
+    - name: stop couchdb
+      systemd:
+          name: couchdb
+          state: stopped
+    - name: delete couchdb data
+      file: 
+        path: "{{ couchdb_data_path }}"
+        state: absent
     
 - hosts: orderer
   tasks:

@@ -1,7 +1,7 @@
 - hosts: peer
   tasks:
     - name: stop
-      shell: "./stop.sh"
+      shell: "./stop.sh && systemctl stop couchdb"
       args:
         chdir: "{{ peer_install_path }}"
 - hosts: orderer

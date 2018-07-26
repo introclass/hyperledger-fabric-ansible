@@ -2,30 +2,69 @@
   yum: 
     name: epel-release
     state: present
+
+- name: couchdb repo
+  copy:
+    src:  "{{ item }}"
+    dest: "/etc/yum.repos.d/{{ item }}"
+  with_items:
+    - "apache-couchdb-rpm.repo"
+
 - name: supervisor
   yum: 
     name: supervisor
     state: present
-
-- name: docker
-  yum: 
-    name: docker
-    state: present
+    update_cache: true
 
 - name: libtool-ltdl
   yum: 
     name: libtool-ltdl
     state: present
+    update_cache: true
 
 - name: golang
   yum: 
     name: golang 
     state: present
+    update_cache: true
 
 - name: git 
   yum: 
     name: git
     state: present
+    update_cache: true
+
+- name: couchdb
+  yum:
+    name: couchdb
+    state: present
+    update_cache: true
+
+- name: upload docker-ce-18.03.1.ce
+  copy:
+    src:  docker-ce-18.03.1.ce-1.el7.centos.x86_64.rpm
+    dest: "/tmp/"
+
+- name: install docker-ce-18.03.1.ce
+  yum: 
+    name: "/tmp/docker-ce-18.03.1.ce-1.el7.centos.x86_64.rpm"
+    state: present
+
+- name: docker daemon config
+  file: 
+    path: /etc/docker/
+    state: directory
+
+- name: docker daemon config
+  notify: restart docker
+  copy: 
+    src: docker_daemon.json
+    dest: /etc/docker/daemon.json
+
+- name: start couchdb
+  systemd:
+      state: started
+      name: couchdb
 
 - name: start docker
   systemd:

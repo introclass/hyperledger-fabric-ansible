@@ -36,7 +36,8 @@ function generateChannelArtifacts() {
   echo "##########################################################"
   # Note: For some unknown reason (at least for now) the block file can't be
   # named orderer.genesis.block or the orderer will fail to launch!
-  $BIN_PATH/configtxgen -profile OrdererGenesis -outputBlock $output/genesisblock
+  $BIN_PATH/configtxgen -profile OrdererGenesis -outputBlock $output/genesisblock  -channelID genesis 
+  
   if [ "$?" -ne 0 ]; then
     echo "Failed to generate orderer genesis block..."
     exit 1
