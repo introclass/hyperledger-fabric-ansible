@@ -3,7 +3,7 @@ layout: default
 title:  README
 author: 李佶澳
 createdate: 2018/07/18 19:00:00
-changedate: 2018/07/26 17:01:53
+changedate: 2018/07/26 18:41:30
 
 ---
 
@@ -12,6 +12,8 @@ changedate: 2018/07/26 17:01:53
 已经支持Fabric 1.2.x、Fabric 1.1.x，到同名分支中获取对应的代码。
 
 Master分支用于等待下一个版本。
+
+<embed src='http://player.youku.com/player.php/sid/XMzc0Njk1MDg3Ng==/v.swf' allowFullScreen='true' quality='high' width='480' height='400' align='middle' allowScriptAccess='always' type='application/x-shockwave-flash'></embed>
 
 ## 说明
 
