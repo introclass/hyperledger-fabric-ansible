@@ -3,7 +3,7 @@ layout: default
 title:  README
 author: 李佶澳
 createdate: 2018/07/18 19:00:00
-changedate: 2018/07/26 13:08:04
+changedate: 2018/07/26 16:04:46
 
 ---
 
@@ -76,6 +76,16 @@ Fabric1.2.x默认使用下面的镜像，最好在peer上提前下载好：
 
 共识算法是solo，如果要切换为其它共识算法，例如kafka，需要另外部署kafka，并修改配置文件。
 
+	$ tree inventories/example.com/
+	inventories/example.com/
+	├── configtx.yaml            //配置参与组织，用于生成创世块和Channel文件
+	├── crypto-config.yaml       //配置参与组织，用于生成证书
+	├── etc_hosts                //域名与机器IP的对应
+	├── group_vars
+	│   └── all                  //设置变量
+	├── host_vars
+	└── hosts                    //目标机器
+
 ### 准备
 
 0 将要部署到目标环境中的二进制文件复制到output/example.com/bin/目录中
@@ -91,9 +101,11 @@ Fabric1.2.x默认使用下面的镜像，最好在peer上提前下载好：
 
 	configtx.yaml
 	crypto-config.yaml
+	etc_hosts
+	group_vars/all
 	hosts
 
-2 准备在运行ansible的机器使用fabric命令。
+2 准备在运行ansible的机器中使用fabric命令。
 
 `prepare.sh`会使用hyperledger fabric的命令，需要把在本地运行的fabric命令放到`output/bin`目录中。
 
