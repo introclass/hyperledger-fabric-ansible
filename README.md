@@ -3,7 +3,7 @@ layout: default
 title:  README
 author: 李佶澳
 createdate: 2018/07/18 19:00:00
-changedate: 2018/07/26 18:41:30
+changedate: 2018/07/26 18:51:26
 
 ---
 
@@ -13,7 +13,7 @@ changedate: 2018/07/26 18:41:30
 
 Master分支用于等待下一个版本。
 
-<embed src='http://player.youku.com/player.php/sid/XMzc0Njk1MDg3Ng==/v.swf' allowFullScreen='true' quality='high' width='480' height='400' align='middle' allowScriptAccess='always' type='application/x-shockwave-flash'></embed>
+[![video](http://www.lijiaocn.com/img/player.png)](https://v.youku.com/v_show/id_XMzc0Njk1MDg3Ng)
 
 ## 说明
 
