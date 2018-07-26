@@ -1,0 +1,21 @@
+- name: create directory
+  file:
+    path: "{{ couchdb_data_path }}"
+    state: directory
+    owner: couchdb
+    group: couchdb
+
+- name: upload couchdb config
+  notify: restart
+  template:
+    src: "{{ item }}.ini.j2"
+    dest: "/opt/couchdb/etc/local.d/{{ item }}.ini"
+    owner: couchdb
+    group: couchdb
+  with_items:
+    - couchdb
+
+- name: start couchdb
+  systemd:
+      state: started
+      name: couchdb

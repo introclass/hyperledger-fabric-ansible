@@ -1,0 +1,7 @@
+{
+	"registry-mirrors": [
+		"https://pee6w651.mirror.aliyuncs.com"
+	],
+	"storage-driver": "overlay2",
+	"selinux-enabled": false
+}

@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: machine
   become: true
   become_user: root
   roles:

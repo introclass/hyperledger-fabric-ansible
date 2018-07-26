@@ -1,0 +1,9 @@
+- name: restart couchdb
+  systemd:
+      state: restarted
+      name: couchdb
+
+- name: restart docker
+  systemd:
+      state: restarted
+      name: docker

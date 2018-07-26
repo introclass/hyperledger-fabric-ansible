@@ -8,4 +8,10 @@
   become: true
   become_user: root
   roles:
-    - peer
+    - couchdb
+
+- hosts: peer
+  become: true
+  become_user: root
+  roles:
+    - peer 

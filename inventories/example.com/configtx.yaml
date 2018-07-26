@@ -1,8 +1,29 @@
+################################################################################
+#
+#   ORGANIZATIONS
+#
+#   This section defines the organizational identities that can be referenced
+#   in the configuration profiles.
+#
+################################################################################
 Organizations:
     - &Orderer-Member1
         Name: orderers.member1.example.com 
         ID: orderers.member1.example.com
         MSPDir: ../../output/example.com/crypto-config/ordererOrganizations/member1.example.com/msp
+        Policies: &Orderer-Member1-Policies
+            Readers:
+                Type: Signature
+                Rule: "OR('orderers.member1.example.com.member')"
+                #Rule: "OR('peers.member1.example.com.member','peers.member2.example.com.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('orderers.member1.example.com.member')"
+                #Rule: "OR('peers.member1.example.com.admin','peers.member2.example.com.admin')"
+            Admins:
+                Type: Signature
+                Rule: "OR('orderers.member1.example.com.admin')"
+                #Rule: "OR('peers.member1.example.com.admin','peers.member2.example.com.admin')"
     - &Peer-Member1
         Name: peers.member1.example.com
         ID: peers.member1.example.com
@@ -126,6 +147,7 @@ Channel: &ChannelDefaults
 
 Profiles:
     OrdererGenesis:
+        <<: *ChannelDefaults
         Capabilities:
             <<: *ChannelCapabilities
         Orderer:

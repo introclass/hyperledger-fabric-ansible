@@ -1,12 +1,20 @@
 - hosts: peer
   tasks:
     - name: stop 
-      shell: "./stop.sh"
+      shell: "./stop.sh && systemctl stop couchdb"
       args:
         chdir: "{{ peer_install_path }}"
     - name: delete data 
       file: 
         path: "{{ peer_install_path }}/data"
+        state: absent
+    - name: stop couchdb
+      systemd:
+          name: couchdb
+          state: stopped
+    - name: delete couchdb data
+      file: 
+        path: "{{ couchdb_data_path }}"
         state: absent
     
 - hosts: orderer
@@ -29,6 +37,16 @@
 
 - hosts: peer
   tasks:
+    - name: create directory
+      file:
+        path: "{{ couchdb_data_path }}"
+        state: directory
+        owner: couchdb
+        group: couchdb
+    - name: start couchdb
+      systemd:
+          name: couchdb
+          state: started
     - name: start
       shell: "./start.sh"
       args:
