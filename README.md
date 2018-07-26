@@ -3,7 +3,7 @@ layout: default
 title:  README
 author: 李佶澳
 createdate: 2018/07/18 19:00:00
-changedate: 2018/07/26 16:04:46
+changedate: 2018/07/26 17:00:43
 
 ---
 
@@ -123,6 +123,11 @@ Fabric1.2.x默认使用下面的镜像，最好在peer上提前下载好：
 	./prepare.sh example
 
 >每个部署环境分别在output和inventories中有一个自己的目录，要增加新部署环境除了在output和inventories中准备目录和文件，您还可能需要根据自己的需要在prepare.sh中添加为新的环境生成证书和其它文件的命令。
+
+4. 准备Docker安装文件
+
+	cd roles/prepare/files/
+	wget https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-18.03.1.ce-1.el7.centos.x86_64.rpm
 
 ### 部署
 
