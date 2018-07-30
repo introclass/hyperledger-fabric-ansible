@@ -3,7 +3,7 @@ layout: default
 title:  README
 author: 李佶澳
 createdate: 2018/07/18 19:00:00
-changedate: 2018/07/26 16:04:46
+changedate: 2018/07/26 18:55:33
 
 ---
 
@@ -15,10 +15,11 @@ Master分支用于等待下一个版本。
 
 ## 说明
 
-这是网易云课堂“[IT技术快速入门学院][1]”的
-第二门课《[HyperLedger Fabric进阶实战课][2]》第三章节使用的素材。
+这是网易云课堂“[IT技术快速入门学院][1]”第二门课《[HyperLedger Fabric进阶实战课][2]》第三章节使用的素材。
 
 这其实已经是一套非常实用的Ansible部署脚本了，完全可以应用于生产：[视频演示讲解][2]。
+
+[![video](http://www.lijiaocn.com/img/player.png)](https://study.163.com/course/introduction.htm?courseId=1005326005#/courseDetail?tab=1)
 
 要获得更多的内容，可以关注：
 
@@ -123,6 +124,11 @@ Fabric1.2.x默认使用下面的镜像，最好在peer上提前下载好：
 	./prepare.sh example
 
 >每个部署环境分别在output和inventories中有一个自己的目录，要增加新部署环境除了在output和inventories中准备目录和文件，您还可能需要根据自己的需要在prepare.sh中添加为新的环境生成证书和其它文件的命令。
+
+4 准备Docker安装文件
+
+	cd roles/prepare/files/
+	wget https://download.docker.com/linux/centos/7/x86_64/stable/Packages/docker-ce-18.03.1.ce-1.el7.centos.x86_64.rpm
 
 ### 部署
 

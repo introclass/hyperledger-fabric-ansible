@@ -1,7 +1,7 @@
 - hosts: peer
   tasks:
     - name: stop 
-      shell: "./stop.sh && systemctl stop couchdb"
+      shell: "./stop.sh"
       args:
         chdir: "{{ peer_install_path }}"
     - name: delete data 
