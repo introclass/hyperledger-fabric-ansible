@@ -10,7 +10,7 @@
     - 'data'
 
 - name: upload binary
-  notify: restart
+  notify: restart peer
   copy:
     src: "{{ item }}"
     dest: "{{ peer_install_path }}/bin"
@@ -18,8 +18,8 @@
   with_items:
     - "{{ bin_path }}/peer"
 
-- name: upload files 
-  notify: restart
+- name: upload msp files 
+  notify: restart peer
   copy:
     src: "{{ item }}"
     dest: "{{ peer_install_path }}"
@@ -27,8 +27,32 @@
     - "{{ peer_crypto_path }}/{{ ORG_DOMAIN }}/peers/{{ inventory_hostname }}/msp"
     - "{{ peer_crypto_path }}/{{ ORG_DOMAIN }}/peers/{{ inventory_hostname }}/tls"
 
+- name: upload peer config
+  notify: restart peer
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ peer_install_path }}/{{ item }}"
+  with_items:
+    - core.yaml
+
+- name: upload supervisord config
+  notify: update supervisord
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ peer_install_path }}/{{ item }}"
+  with_items:
+    - peer.ini   
+
+- name: create link
+  notify: update supervisord
+  file:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    state: link
+  with_items:
+    - { src: "{{ peer_install_path }}/peer.ini", dest: "/etc/supervisord.d/peer.ini" }
+
 - name: upload script 
-  notify: restart
   copy:
     src: "{{ item }}"
     dest: "{{ peer_install_path }}"
@@ -36,19 +60,3 @@
   with_items:
     - start.sh
     - stop.sh
-
-- name: upload template config
-  notify: restart
-  template:
-    src: "{{ item }}.yaml.j2"
-    dest: "{{ peer_install_path }}/{{ item }}.yaml"
-  with_items:
-    - core
-
-- name: upload template config
-  notify: restart
-  template:
-    src: "{{ item }}.conf.j2"
-    dest: "{{ peer_install_path }}/{{ item }}.conf"
-  with_items:
-    - supervisord

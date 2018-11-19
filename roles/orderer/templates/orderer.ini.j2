@@ -1,0 +1,18 @@
+[program: orderer]
+command={{ orderer_install_path }}/bin/orderer
+
+environment=FABRIC_CFG_PATH={{ orderer_install_path }}
+
+numprocs=1
+autostart=true
+startretries=3
+autorestart=unexpected
+exitcodes=0,2
+
+stdout_logfile={{ orderer_install_path }}/log/{{ inventory_hostname }}.stdout
+stdout_logfile_maxbytes=50MB
+stdout_logfile_backups=10
+
+stderr_logfile={{ orderer_install_path }}/log/{{ inventory_hostname }}.stderr
+stderr_logfile_maxbytes=50MB
+stderr_logfile_backups=10

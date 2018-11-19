@@ -57,7 +57,7 @@ Fabric1.2.x默认使用下面的镜像，最好在peer上提前下载好：
 
 ### 目标
 
-在192.168.88.10、192.168.88.11、192.168.88.12上部署一个有两个组织三个Peer组成的联盟。
+在192.168.33.11、192.168.33.12、192.168.33.13上部署一个有两个组织三个Peer组成的联盟。
 
 联盟的二级域名为： example.com。
 
@@ -67,13 +67,13 @@ Fabric1.2.x默认使用下面的镜像，最好在peer上提前下载好：
 
 组织一中部署了一个Orderer和两个Peer，域名和IP分别为：
 
-	orderer0.member1.example.com  192.168.88.10
-	peer0.member1.example.com     192.168.88.10
-	peer1.member1.example.com     192.168.88.11
+	orderer0.member1.example.com  192.168.33.11
+	peer0.member1.example.com     192.168.33.11
+	peer1.member1.example.com     192.168.33.12
 
 组织二没有部署Orderer参与共识，只部署一个Peer：
 
-	peer0.member2.example.com     192.168.88.12
+	peer0.member2.example.com     192.168.33.13
 
 共识算法是solo，如果要切换为其它共识算法，例如kafka，需要另外部署kafka，并修改配置文件。
 
@@ -110,7 +110,7 @@ Fabric1.2.x默认使用下面的镜像，最好在peer上提前下载好：
 
 `prepare.sh`会使用hyperledger fabric的命令，需要把在本地运行的fabric命令放到`output/bin`目录中。
 
-我是在mac上执行ansible的，下载的是darwin版本的fabric：
+我是在mac上执行ansible的，需要另外下载darwin版本的fabric，如果你是linux系统，直接复用前面下载的文件就可以了：
 
 	mkdir -p output/bin
 	cd output/bin

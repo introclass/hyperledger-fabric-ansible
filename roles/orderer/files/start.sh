@@ -1,2 +1,2 @@
 #!/bin/bash
-supervisord -c supervisord.conf
+supervisorctl start orderer

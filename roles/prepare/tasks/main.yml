@@ -4,6 +4,14 @@
       user: root
       key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
+- name: Set hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Set bash prompt
+  shell: |
+      echo 'export PS1="[\u@\H \W]\\$ "'>> ~/.bashrc
+
 - name: install dependent packages
   import_tasks: centos.yml
   when: ansible_distribution == "CentOS"
