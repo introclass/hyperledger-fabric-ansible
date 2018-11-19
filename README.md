@@ -110,7 +110,7 @@ Fabric1.2.x默认使用下面的镜像，最好在peer上提前下载好：
 
 `prepare.sh`会使用hyperledger fabric的命令，需要把在本地运行的fabric命令放到`output/bin`目录中。
 
-我是在mac上执行ansible的，下载的是darwin版本的fabric：
+我是在mac上执行ansible的，需要另外下载darwin版本的fabric，如果你是linux系统，直接复用前面下载的文件就可以了：
 
 	mkdir -p output/bin
 	cd output/bin

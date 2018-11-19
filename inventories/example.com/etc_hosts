@@ -1,6 +1,6 @@
 127.0.0.1 localhost
 
-192.168.88.10 orderer0.member1.example.com 
-192.168.88.10 peer0.member1.example.com 
-192.168.88.11 peer1.member1.example.com 
-192.168.88.12 peer0.member2.example.com 
+192.168.33.11 orderer0.member1.example.com 
+192.168.33.11 peer0.member1.example.com 
+192.168.33.12 peer1.member1.example.com 
+192.168.33.13 peer0.member2.example.com 

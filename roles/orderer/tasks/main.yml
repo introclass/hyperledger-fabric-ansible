@@ -10,7 +10,7 @@
     - 'data'
 
 - name: upload binary
-  notify: restart
+  notify: restart orderer
   copy:
     src: "{{ item }}"
     dest: "{{ orderer_install_path }}/bin"
@@ -18,8 +18,8 @@
   with_items:
     - "{{ bin_path }}/orderer"
 
-- name: upload files 
-  notify: restart
+- name: upload msp files 
+  notify: restart orderer
   copy:
     src: "{{ item }}"
     dest: "{{ orderer_install_path }}"
@@ -27,10 +27,33 @@
     - "{{ orderer_crypto_path }}/{{ ORG_DOMAIN }}/orderers/{{ inventory_hostname }}/msp"
     - "{{ orderer_crypto_path }}/{{ ORG_DOMAIN }}/orderers/{{ inventory_hostname }}/tls"
     - "{{ channel_path }}/genesisblock"
-    - "{{ bin_path }}"
+
+- name: upload orderer config
+  notify: restart orderer
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ orderer_install_path }}/{{ item }}"
+  with_items:
+    - orderer.yaml
+
+- name: upload supervisord config
+  notify: update supervisord
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ orderer_install_path }}/{{ item }}"
+  with_items:
+    - orderer.ini
+
+- name: create link
+  notify: update supervisord
+  file:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    state: link
+  with_items:
+    - { src: "{{ orderer_install_path }}/orderer.ini", dest: "/etc/supervisord.d/orderer.ini" }
 
 - name: upload script 
-  notify: restart
   copy:
     src: "{{ item }}"
     dest: "{{ orderer_install_path }}"
@@ -38,19 +61,3 @@
   with_items:
     - start.sh
     - stop.sh
-
-- name: upload template config
-  notify: restart
-  template:
-    src: "{{ item }}.yaml.j2"
-    dest: "{{ orderer_install_path }}/{{ item }}.yaml"
-  with_items:
-    - orderer
-
-- name: upload template config
-  notify: restart
-  template:
-    src: "{{ item }}.conf.j2"
-    dest: "{{ orderer_install_path }}/{{ item }}.conf"
-  with_items:
-    - supervisord

@@ -1,14 +1,12 @@
 [orderer]
-orderer0.member1.example.com MSPID=orderers.member1.example.com ORG_DOMAIN=member1.example.com ansible_host=192.168.88.10  
+orderer0.member1.example.com MSPID=orderers.member1.example.com ORG_DOMAIN=member1.example.com ansible_host=192.168.33.11  
 
 [peer]
-peer0.member1.example.com MSPID=peers.member1.example.com ORG_DOMAIN=member1.example.com ansible_host=192.168.88.10 STATE_DB=CouchDB COUCH_USER=admin COUCH_PASS=password
-
-peer1.member1.example.com MSPID=peers.member1.example.com ORG_DOMAIN=member1.example.com ansible_host=192.168.88.11 STATE_DB=CouchDB COUCH_USER=admin COUCH_PASS=password
-
-peer0.member2.example.com MSPID=peers.member2.example.com ORG_DOMAIN=member2.example.com ansible_host=192.168.88.12 STATE_DB=CouchDB COUCH_USER=admin COUCH_PASS=password
+peer0.member1.example.com MSPID=peers.member1.example.com ORG_DOMAIN=member1.example.com ansible_host=192.168.33.11 STATE_DB=CouchDB COUCH_USER=admin COUCH_PASS=password
+peer1.member1.example.com MSPID=peers.member1.example.com ORG_DOMAIN=member1.example.com ansible_host=192.168.33.12 STATE_DB=CouchDB COUCH_USER=admin COUCH_PASS=password
+peer0.member2.example.com MSPID=peers.member2.example.com ORG_DOMAIN=member2.example.com ansible_host=192.168.33.13 STATE_DB=CouchDB COUCH_USER=admin COUCH_PASS=password
 
 [machine]
-192.168.88.10
-192.168.88.11
-192.168.88.12
+192.168.33.11
+192.168.33.12
+192.168.33.13

@@ -1,2 +1,2 @@
 #!/bin/bash
-supervisorctl -c supervisord.conf shutdown
+supervisorctl stop peer
