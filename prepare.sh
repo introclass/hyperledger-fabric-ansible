@@ -9,7 +9,7 @@
 CHANNEL_NAME="mychannel"
 BIN_PATH=`pwd`"/output/bin/bin"
 
-function generateCerts (){
+function generateCerts() {
   config=$1
   output=$2
   echo
